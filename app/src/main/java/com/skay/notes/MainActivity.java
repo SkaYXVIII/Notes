@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     RecyclerView recyclerView;
     NotesListAdapter notesListAdapter;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     SearchView searchView_home;
     Notes selectedNote;
     boolean isSearching = false;
-    String searchedText;
+    String searchedText = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,36 +49,36 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         database = RoomDB.getInstance(this);
         notes = database.mainDAO().getAll();
 
-       updateRecycler(notes);
+        updateRecycler(notes);
 
-       fab_add.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
-               startActivityForResult(intent, 101);
-           }
-       });
+        fab_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
+                startActivityForResult(intent, 101);
+            }
+        });
 
-       searchView_home.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-           @Override
-           public boolean onQueryTextSubmit(String query) {
-               return false;
-           }
+        searchView_home.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-           @Override
-           public boolean onQueryTextChange(String newText) {
-               filter(newText);
-               return true;
-           }
-       });
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText);
+                return true;
+            }
+        });
     }
 
     private void filter(String newText) {
         List<Notes> filteredList = new ArrayList<>();
         searchedText = newText;
-        for (Notes singleNote : notes){
+        for (Notes singleNote : notes) {
             if (singleNote.getTitle().toLowerCase().contains(newText.toLowerCase())
-            || singleNote.getNotes().toLowerCase().contains(newText.toLowerCase())){
+                    || singleNote.getNotes().toLowerCase().contains(newText.toLowerCase())) {
                 filteredList.add(singleNote);
             }
         }
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 101){
+        if (requestCode == 101) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("note");
                 database.mainDAO().insert(new_notes);
@@ -97,8 +97,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notesListAdapter.notifyDataSetChanged();
                 filter(searchedText);
             }
-        }
-        else if (requestCode == 102){
+        } else if (requestCode == 102) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("note");
                 database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes());
@@ -143,13 +142,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.pin:
-                if (selectedNote.isPinned()){
-                    database.mainDAO().pin(selectedNote.getID(),false);
+                if (selectedNote.isPinned()) {
+                    database.mainDAO().pin(selectedNote.getID(), false);
                     Toast.makeText(MainActivity.this, "Unpinned!", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     database.mainDAO().pin(selectedNote.getID(), true);
                     Toast.makeText(MainActivity.this, "Pinned!", Toast.LENGTH_SHORT).show();
                 }
